@@ -1,0 +1,30 @@
+###### heatmap
+
+
+
+library(pheatmap)
+
+top_DEGs <- signi[order(signi$adj.P.Val), ]
+top_DEGs <- top_DEGs[!duplicated(top_DEGs$gene_symbol), ]
+top_DEGs <- top_DEGs[!is.na(top_DEGs$gene_symbol) & top_DEGs$gene_symbol != "", ]
+top50_genes <- head(top_DEGs, 50)
+heatmap_data <- exprs_female_matrix[top50_genes$probe_id, ]
+rownames(heatmap_data) <- top50_genes$gene_symbol
+heatmap_scaled <- t(scale(t(heatmap_data)))
+annotation_col <- data.frame(Disease = group_female)
+rownames(annotation_col) <- colnames(heatmap_scaled)
+
+#pheatmap
+pheatmap(
+  heatmap_scaled,
+  annotation_col = annotation_col,
+  fontsize_row = 7,
+  fontsize_col = 7,
+  main = "Top 50 DEGs: RA vs Control (Females)",
+  color = colorRampPalette(c("navy", "white", "firebrick3"))(100),
+  cluster_rows = TRUE,
+  cluster_cols = TRUE,
+  border_color = NA
+)
+
+
